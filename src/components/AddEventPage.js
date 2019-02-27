@@ -1,12 +1,33 @@
 import React from 'react';
 import Select from 'react-select';
 import categories from '../mocks/categories';
-// import employes from '../mocks/employes';
+import coordinators from '../mocks/employes';
 
-const options = categories.map(category => ({
+const categoriesOptions = categories.map(category => ({
   value: category.id,
   label: category.name,
 }));
+
+const coordinatorOptions = [
+  {
+    label: 'Me',
+    options: [
+      {
+        label: `${coordinators[2].name} ${coordinators[2].lastname}`,
+        value: coordinators[2].id,
+        email: coordinators[2].email,
+      },
+    ],
+  },
+  {
+    label: 'Others',
+    options: coordinators.map(coordinator => ({
+      value: coordinator.id,
+      label: `${coordinator.name} ${coordinator.lastname}`,
+      email: coordinator.email,
+    })),
+  },
+];
 
 class AddEventPage extends React.Component {
   state = {
@@ -14,6 +35,12 @@ class AddEventPage extends React.Component {
     description: '',
     categoryId: undefined,
     paidEvent: false,
+    eventFee: '',
+    reward: '',
+    coordinator: {
+      id: '',
+      email: '',
+    },
   };
 
   onTitleChange = (e) => {
@@ -42,6 +69,29 @@ class AddEventPage extends React.Component {
     }
   };
 
+  onEventFeeChange = (e) => {
+    const eventFee = e.target.value;
+    if (!eventFee || eventFee.match(/^[0-9]*$/)) {
+      this.setState(() => ({ eventFee }));
+    }
+  };
+
+  onRewardChange = (e) => {
+    const reward = e.target.value;
+    if (!reward || reward.match(/^[0-9]*$/)) {
+      this.setState(() => ({ reward }));
+    }
+  };
+
+  onCoordinatorChange = (e) => {
+    this.setState(() => ({
+      coordinator: {
+        id: e.value,
+        email: e.email,
+      },
+    }));
+  };
+
   onSubmit = (e) => {
     e.preventDefault();
   };
@@ -52,11 +102,14 @@ class AddEventPage extends React.Component {
       description,
       categoryId,
       paidEvent,
+      eventFee,
+      reward,
+      coordinator,
     } = this.state;
 
     return (
-      <div>
-        <form onSubmit={this.onSubmit}>
+      <form onSubmit={this.onSubmit}>
+        <div>
           <h2>About</h2>
           <hr />
           <div className="input-group">
@@ -74,8 +127,8 @@ class AddEventPage extends React.Component {
           </div>
           <div className="input-group">
             <Select
-              options={options}
-              value={options[categoryId]}
+              options={categoriesOptions}
+              value={categoriesOptions[categoryId]}
               onChange={this.onCategoryChange}
             />
           </div>
@@ -93,13 +146,32 @@ class AddEventPage extends React.Component {
                 Paid event
               </label>
             </div>
-            <div className="input-group__inner-group">
-              <input type="text" />
-              $
-            </div>
+            {paidEvent && (
+              <div className="input-group__inner-group">
+                <input type="text" value={eventFee} onChange={this.onEventFeeChange} placeholder="Fee" />
+                $
+              </div>
+            )}
           </div>
-        </form>
-      </div>
+          <div className="input-group">
+            Reward
+            <input type="text" value={reward} onChange={this.onRewardChange} placeholder="Number" />
+            reward points for attendance
+          </div>
+        </div>
+        <div>
+          <h2>Coordinator</h2>
+          <hr />
+          <div className="input-group__inner-group">
+            Responsible
+            <Select
+              options={coordinatorOptions}
+              value={coordinatorOptions[coordinator.id]}
+              onChange={this.onCoordinatorChange}
+            />
+          </div>
+        </div>
+      </form>
     );
   }
 }
