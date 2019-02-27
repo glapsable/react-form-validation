@@ -13,9 +13,9 @@ const coordinatorOptions = [
     label: 'Me',
     options: [
       {
-        label: `${coordinators[2].name} ${coordinators[2].lastname}`,
-        value: coordinators[2].id,
-        email: coordinators[2].email,
+        label: `${coordinators[3].name} ${coordinators[3].lastname}`,
+        value: coordinators[3].id,
+        email: coordinators[3].email,
       },
     ],
   },
@@ -88,6 +88,15 @@ class AddEventPage extends React.Component {
       coordinator: {
         id: e.value,
         email: e.email,
+      },
+    }));
+  };
+
+  onEmailChange = (e) => {
+    const email = e.target.value;
+    this.setState(() => ({
+      coordinator: {
+        email,
       },
     }));
   };
@@ -166,9 +175,10 @@ class AddEventPage extends React.Component {
             Responsible
             <Select
               options={coordinatorOptions}
-              value={coordinatorOptions[coordinator.id]}
+              value={coordinatorOptions[1].options[coordinator.id]}
               onChange={this.onCoordinatorChange}
             />
+            <input type="text" value={coordinator.email} onChange={this.onEmailChange} />
           </div>
         </div>
       </form>
