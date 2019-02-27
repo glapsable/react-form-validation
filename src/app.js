@@ -1,9 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter, Route } from 'react-router-dom';
+import AppRouter from './routers/AppRouter';
 import 'normalize.css';
 import './styles/styles.scss';
 
-const routes = 
-
-ReactDOM.render(<MyApp />, document.getElementById('app'));
+ReactDOM.render(<AppRouter />, document.getElementById('app'));
