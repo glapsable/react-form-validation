@@ -13,11 +13,8 @@ class AddEventPage extends React.Component {
     title: '',
     description: '',
     categoryId: undefined,
+    paidEvent: false,
   };
-
-  componentDidMount() {
-    console.log(options);
-  }
 
   onTitleChange = (e) => {
     const title = e.target.value;
@@ -36,12 +33,26 @@ class AddEventPage extends React.Component {
     this.setState(() => ({ categoryId }));
   };
 
+  onEventPaidChange = (e) => {
+    const eventType = e.target.name;
+    if (eventType === 'paidEvent') {
+      this.setState(() => ({ paidEvent: true }));
+    } else if (eventType === 'freeEvent') {
+      this.setState(() => ({ paidEvent: false }));
+    }
+  };
+
   onSubmit = (e) => {
     e.preventDefault();
   };
 
   render() {
-    const { title, description, categoryId } = this.state;
+    const {
+      title,
+      description,
+      categoryId,
+      paidEvent,
+    } = this.state;
 
     return (
       <div>
@@ -72,13 +83,13 @@ class AddEventPage extends React.Component {
             Payment
             <div className="input-group__inner-group">
               <label htmlFor="free-event">
-                <input type="radio" id="free-event" />
+                <input type="radio" checked={!paidEvent} onChange={this.onEventPaidChange} name="freeEvent" id="free-event" />
                 Free event
               </label>
             </div>
             <div className="input-group__inner-group">
               <label htmlFor="paid-event">
-                <input type="radio" id="paid-event" />
+                <input type="radio" checked={paidEvent} onChange={this.onEventPaidChange} name="paidEvent" id="paid-event" />
                 Paid event
               </label>
             </div>
