@@ -1,6 +1,12 @@
 import React from 'react';
+import Select from 'react-select';
 import categories from '../mocks/categories';
 // import employes from '../mocks/employes';
+
+const options = categories.map(category => ({
+  value: category.id,
+  label: category.name,
+}));
 
 class AddEventPage extends React.Component {
   state = {
@@ -8,6 +14,10 @@ class AddEventPage extends React.Component {
     description: '',
     categoryId: undefined,
   };
+
+  componentDidMount() {
+    console.log(options);
+  }
 
   onTitleChange = (e) => {
     const title = e.target.value;
@@ -22,7 +32,7 @@ class AddEventPage extends React.Component {
   };
 
   onCategoryChange = (e) => {
-    const categoryId = e.target.value;
+    const categoryId = e.value;
     this.setState(() => ({ categoryId }));
   };
 
@@ -52,25 +62,30 @@ class AddEventPage extends React.Component {
             <p>{description.length}/140</p>
           </div>
           <div className="input-group">
-            Category
-            <select value={categoryId} onChange={this.onCategoryChange}>
-              <option selected />
-              {
-                categories && categories.map(
-                  category => (
-                    <option
-                      value={category.id}
-                      key={category.name}
-                    >
-                      {category.name}
-                    </option>
-                  ),
-                )
-              }
-            </select>
+            <Select
+              options={options}
+              value={options[categoryId]}
+              onChange={this.onCategoryChange}
+            />
           </div>
           <div className="input-group">
-
+            Payment
+            <div className="input-group__inner-group">
+              <label htmlFor="free-event">
+                <input type="radio" id="free-event" />
+                Free event
+              </label>
+            </div>
+            <div className="input-group__inner-group">
+              <label htmlFor="paid-event">
+                <input type="radio" id="paid-event" />
+                Paid event
+              </label>
+            </div>
+            <div className="input-group__inner-group">
+              <input type="text" />
+              $
+            </div>
           </div>
         </form>
       </div>
