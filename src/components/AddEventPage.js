@@ -171,15 +171,22 @@ class AddEventPage extends React.Component {
         <div>
           <h2>Coordinator</h2>
           <hr />
-          <div className="input-group__inner-group">
+          <div className="input-group">
             Responsible
             <Select
               options={coordinatorOptions}
               value={coordinatorOptions[1].options[coordinator.id]}
               onChange={this.onCoordinatorChange}
             />
+          </div>
+          <div className="input-group">
+            Email
             <input type="text" value={coordinator.email} onChange={this.onEmailChange} />
           </div>
+        </div>
+        <div className="input-group">
+          <h2>When</h2>
+          <hr />
         </div>
       </form>
     );
