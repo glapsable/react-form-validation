@@ -1,34 +1,7 @@
 import React from 'react';
-import Select from 'react-select';
 // import PropTypes from 'prop-types';
 import categories from '../mocks/categories';
 import coordinators from '../mocks/employes';
-
-const categoriesOptions = categories.map(category => ({
-  value: category.id,
-  label: category.name,
-}));
-
-const coordinatorOptions = [
-  {
-    label: 'Me',
-    options: [
-      {
-        label: `${coordinators[3].name} ${coordinators[3].lastname}`,
-        value: coordinators[3].id,
-        email: coordinators[3].email,
-      },
-    ],
-  },
-  {
-    label: 'Others',
-    options: coordinators.map(coordinator => ({
-      value: coordinator.id,
-      label: `${coordinator.name} ${coordinator.lastname}`,
-      email: coordinator.email,
-    })),
-  },
-];
 
 class AddEventPage extends React.Component {
   state = {
@@ -86,7 +59,7 @@ class AddEventPage extends React.Component {
   };
 
   onCategoryChange = (e) => {
-    const categoryId = e.value;
+    const categoryId = parseInt(e.target.value, 10);
     this.setState(() => ({ categoryId }));
   };
 
@@ -114,10 +87,11 @@ class AddEventPage extends React.Component {
   };
 
   onCoordinatorChange = (e) => {
+    const id = e.target.value;
     this.setState(() => ({
       coordinator: {
-        id: e.value,
-        email: e.email,
+        id,
+        email: coordinators[id].email,
       },
     }));
   };
@@ -242,11 +216,13 @@ class AddEventPage extends React.Component {
             <p>{description.length}/140</p>
           </div>
           <div className="input-group">
-            <Select
-              options={categoriesOptions}
-              value={categoriesOptions[categoryId]}
-              onChange={this.onCategoryChange}
-            />
+            <select value={categoryId} onChange={this.onCategoryChange}>
+              {
+                categories && categories.map(({ id, name }) => (
+                  <option value={id} key={id}>{name}</option>
+                ))
+              }
+            </select>
           </div>
           <div className="input-group">
             Payment
@@ -280,11 +256,18 @@ class AddEventPage extends React.Component {
           <hr />
           <div className="input-group">
             Responsible
-            <Select
-              options={coordinatorOptions}
-              value={coordinatorOptions[1].options[coordinator.id]}
-              onChange={this.onCoordinatorChange}
-            />
+            <select value={coordinator.id} onChange={this.onCoordinatorChange}>
+              <optgroup label="Me">
+                <option value={coordinators[3].id}>{`${coordinators[3].name} ${coordinators[3].lastname}`}</option>
+              </optgroup>
+              <optgroup label="Others">
+                {
+                  coordinators && coordinators.map(({ id, name, lastname }) => (
+                    <option value={id} key={id}>{`${name} ${lastname}`}</option>
+                  ))
+                }
+              </optgroup>
+            </select>
           </div>
           <div className="input-group">
             Email
