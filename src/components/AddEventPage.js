@@ -69,6 +69,46 @@ class AddEventPage extends React.Component {
           eventFee: '',
         }));
         break;
+      case 'coordinator':
+        this.setState(() => ({
+          coordinator: {
+            id: value,
+            email: coordinators[value].email,
+          },
+        }));
+        break;
+      case 'email':
+        this.setState(prevState => ({
+          coordinator: {
+            ...prevState.coordinator,
+            email: value,
+          },
+        }));
+        break;
+      case 'date':
+        this.setState(prevState => ({
+          dateTime: {
+            ...prevState.dateTime,
+            date: value,
+          },
+        }));
+        break;
+      case 'time':
+        this.setState(prevState => ({
+          dateTime: {
+            ...prevState.dateTime,
+            time: value,
+          },
+        }));
+        break;
+      case 'am':
+        this.setState(prevState => ({
+          dateTime: {
+            ...prevState.dateTime,
+            am: JSON.parse(value),
+          },
+        }));
+        break;
       default:
         break;
     }
@@ -83,140 +123,13 @@ class AddEventPage extends React.Component {
     }
   };
 
-  // onEventPaidChange = (e) => {
-  //   const eventType = e.target.name;
-  //   const { errors } = this.state;
-  //   if (eventType === 'paidEvent') {
-  //     this.setState(() => ({ paidEvent: true }));
-  //   } else if (eventType === 'freeEvent') {
-  //     this.setState(() => ({
-  //       paidEvent: false,
-  //       eventFee: '',
-  //     }));
-  //     if (errors.eventFee) {
-  //       this.setState(prevState => ({
-  //         errors: {
-  //           ...prevState.errors,
-  //           eventFee: false,
-  //         },
-  //       }));
-  //     }
-  //   }
-  // };
-
-  onCoordinatorChange = (e) => {
-    const id = e.target.value;
-    const { errors } = this.state;
-    this.setState(() => ({
-      coordinator: {
-        id,
-        email: coordinators[id].email,
-      },
-    }));
-    if (errors.coordinator) {
-      this.setState(prevState => ({
-        errors: {
-          ...prevState.errors,
-          coordinator: false,
-        },
-      }));
-    }
-  };
-
-  onEmailChange = (e) => {
-    const email = e.target.value;
-    const { errors } = this.state;
-    this.setState(prevState => ({
-      coordinator: {
-        ...prevState.coordinator,
-        email,
-      },
-    }));
-    if (errors.emailMatch) {
-      this.setState(prevState => ({
-        errors: {
-          ...prevState.errors,
-          emailMatch: false,
-        },
-      }));
-    }
-  };
-
-  onDateChange = (e) => {
-    const date = e.target.value;
-    const { errors } = this.state;
-    this.setState(prevState => ({
-      dateTime: {
-        ...prevState.dateTime,
-        date,
-      },
-    }));
-    if (errors.date) {
-      this.setState(prevState => ({
-        errors: {
-          ...prevState.errors,
-          date: false,
-        },
-      }));
-    }
-  };
-
-  onTimeChange = (e) => {
-    const time = e.target.value;
-    const { errors } = this.state;
-    this.setState(prevState => ({
-      dateTime: {
-        ...prevState.dateTime,
-        time,
-      },
-    }));
-    if (errors.time) {
-      this.setState(prevState => ({
-        errors: {
-          ...prevState.errors,
-          time: false,
-        },
-      }));
-    }
-  };
-
-  onAmPmChange = (e) => {
-    const amPm = e.target.name;
-    if (amPm === 'am') {
-      this.setState(prevState => ({
-        dateTime: {
-          ...prevState.dateTime,
-          am: true,
-        },
-      }));
-    } else if (amPm === 'pm') {
-      this.setState(prevState => ({
-        dateTime: {
-          ...prevState.dateTime,
-          am: false,
-        },
-      }));
-    }
-  };
-
-  // onDurationChange = (e) => {
-  //   const duration = e.target.value;
-  //   if (duration.match(/^[0-9]*$/)) {
-  //     this.setState({
-  //       duration,
-  //     });
-  //   }
-  // };
-
   formValid = (dataToValidate) => {
     let valid = true;
-
     Object.values(dataToValidate).forEach((val) => {
       if (!val) {
         valid = false;
       }
     });
-
     return valid;
   };
 
@@ -448,7 +361,8 @@ class AddEventPage extends React.Component {
               style={{ border: errors.coordinator.length > 0 ? '1px solid red' : '' }}
               className={errors.coordinator.length > 0 ? 'error' : ''}
               value={coordinator.id}
-              onChange={this.onCoordinatorChange}
+              onChange={this.onInputChange}
+              name="coordinator"
             >
               <optgroup label="Me">
                 <option value={coordinators[3].id}>{`${coordinators[3].name} ${coordinators[3].lastname}`}</option>
@@ -469,7 +383,8 @@ class AddEventPage extends React.Component {
               className={errors.emailMatch.length > 0 ? 'error' : ''}
               type="text"
               value={coordinator.email}
-              onChange={this.onEmailChange}
+              onChange={this.onInputChange}
+              name="email"
             />
           </div>
         </div>
@@ -482,7 +397,8 @@ class AddEventPage extends React.Component {
               style={{ border: errors.date.length > 0 ? '1px solid red' : '' }}
               type="date"
               value={dateTime.date}
-              onChange={this.onDateChange}
+              onChange={this.onInputChange}
+              name="date"
             />
             <div className="input-group__inner-group">
               at
@@ -492,15 +408,16 @@ class AddEventPage extends React.Component {
                 min="00:00"
                 max="12:00"
                 value={dateTime.time}
-                onChange={this.onTimeChange}
+                onChange={this.onInputChange}
+                name="time"
               />
               <label htmlFor="am">
                 AM
-                <input type="radio" checked={dateTime.am} onChange={this.onAmPmChange} id="am" name="am" />
+                <input type="radio" checked={dateTime.am} onChange={this.onInputChange} value={!!1} id="am" name="am" />
               </label>
               <label htmlFor="pm">
                 PM
-                <input type="radio" checked={!dateTime.am} onChange={this.onAmPmChange} id="pm" name="pm" />
+                <input type="radio" checked={!dateTime.am} onChange={this.onInputChange} value={!!0} id="pm" name="am" />
               </label>
             </div>
           </div>
