@@ -7,7 +7,7 @@ class AddEventPage extends React.Component {
   state = {
     title: '',
     description: '',
-    categoryId: undefined,
+    category: undefined,
     paidEvent: false,
     eventFee: '',
     reward: '',
@@ -32,84 +32,77 @@ class AddEventPage extends React.Component {
     },
   };
 
-  onTitleChange = (e) => {
-    const title = e.target.value.trim();
+  onInputChange = (e) => {
     const { errors } = this.state;
-    this.setState(() => ({ title }));
-    if (errors.title === true) {
-      this.setState(prevState => ({
-        errors: {
-          ...prevState.errors,
-          title: false,
-        },
-      }));
-    }
-  };
+    const { name, value } = e.target;
 
-  onDescriptionChange = (e) => {
-    const description = e.target.value;
-    const { errors } = this.state;
-    if (description.length <= 140) {
-      this.setState(() => ({ description }));
-    }
-    if (errors.description === true) {
-      this.setState(prevState => ({
-        errors: {
-          ...prevState.errors,
-          description: false,
-        },
-      }));
-    }
-  };
-
-  onCategoryChange = (e) => {
-    const categoryId = parseInt(e.target.value, 10);
-    this.setState(() => ({ categoryId }));
-  };
-
-  onEventPaidChange = (e) => {
-    const eventType = e.target.name;
-    const { errors } = this.state;
-    if (eventType === 'paidEvent') {
-      this.setState(() => ({ paidEvent: true }));
-    } else if (eventType === 'freeEvent') {
-      this.setState(() => ({
-        paidEvent: false,
-        eventFee: '',
-      }));
-      if (errors.eventFee) {
-        this.setState(prevState => ({
-          errors: {
-            ...prevState.errors,
-            eventFee: false,
-          },
+    switch (name) {
+      case 'title':
+        this.setState(() => ({ [name]: value }));
+        break;
+      case 'description':
+        if (value.length <= 140) {
+          this.setState(() => ({ [name]: value }));
+        }
+        break;
+      case 'eventFee':
+        if (!value || value.match(/^[0-9]*$/)) {
+          this.setState(() => ({ [name]: value }));
+        }
+        break;
+      case 'reward':
+        if (!value || value.match(/^[0-9]*$/)) {
+          this.setState(() => ({ [name]: value }));
+        }
+        break;
+      case 'duration':
+        if (!value || value.match(/^[0-9]*$/)) {
+          this.setState(() => ({ [name]: value }));
+        }
+        break;
+      case 'category':
+        this.setState(() => ({ [name]: value }));
+        break;
+      case 'paidEvent':
+        this.setState(() => ({
+          [name]: JSON.parse(value),
+          eventFee: '',
         }));
-      }
+        break;
+      default:
+        break;
     }
-  };
 
-  onEventFeeChange = (e) => {
-    const eventFee = e.target.value;
-    const { errors } = this.state;
-    if (!eventFee || eventFee.match(/^[0-9]*$/)) {
-      this.setState(() => ({ eventFee }));
-    }
-    if (errors.eventFee) {
+    if (errors[name] && errors[name].length > 0) {
       this.setState(prevState => ({
         errors: {
           ...prevState.errors,
-          eventFee: false,
+          [name]: '',
         },
       }));
     }
   };
 
-  onRewardChange = (e) => {
-    const reward = e.target.value;
-    if (!reward || reward.match(/^[0-9]*$/)) {
-      this.setState(() => ({ reward }));
-    }
-  };
+  // onEventPaidChange = (e) => {
+  //   const eventType = e.target.name;
+  //   const { errors } = this.state;
+  //   if (eventType === 'paidEvent') {
+  //     this.setState(() => ({ paidEvent: true }));
+  //   } else if (eventType === 'freeEvent') {
+  //     this.setState(() => ({
+  //       paidEvent: false,
+  //       eventFee: '',
+  //     }));
+  //     if (errors.eventFee) {
+  //       this.setState(prevState => ({
+  //         errors: {
+  //           ...prevState.errors,
+  //           eventFee: false,
+  //         },
+  //       }));
+  //     }
+  //   }
+  // };
 
   onCoordinatorChange = (e) => {
     const id = e.target.value;
@@ -206,14 +199,14 @@ class AddEventPage extends React.Component {
     }
   };
 
-  onDurationChange = (e) => {
-    const duration = e.target.value;
-    if (duration.match(/^[0-9]*$/)) {
-      this.setState({
-        duration,
-      });
-    }
-  };
+  // onDurationChange = (e) => {
+  //   const duration = e.target.value;
+  //   if (duration.match(/^[0-9]*$/)) {
+  //     this.setState({
+  //       duration,
+  //     });
+  //   }
+  // };
 
   formValid = (dataToValidate) => {
     let valid = true;
@@ -236,7 +229,7 @@ class AddEventPage extends React.Component {
       coordinator,
       paidEvent,
       eventFee,
-      categoryId,
+      category,
       reward,
       dateTime,
     } = this.state;
@@ -251,7 +244,7 @@ class AddEventPage extends React.Component {
       const data = {
         title,
         description,
-        category_id: categoryId,
+        category_id: category,
         paid_event: paidEvent,
         event_fee: eventFee || 0,
         reward: reward || 0,
@@ -329,7 +322,7 @@ class AddEventPage extends React.Component {
     const {
       title,
       description,
-      categoryId,
+      category,
       paidEvent,
       eventFee,
       reward,
@@ -352,8 +345,10 @@ class AddEventPage extends React.Component {
                 style={{ border: errors.title.length > 0 ? '1px solid red' : '' }}
                 className={errors.title.length > 0 ? 'error' : ''}
                 value={title}
-                onChange={this.onTitleChange}
+                onChange={this.onInputChange}
+                name="title"
                 id="title"
+                placeholder="Make it short and clear"
               />
             </label>
           </div>
@@ -364,7 +359,8 @@ class AddEventPage extends React.Component {
                 style={{ border: errors.description.length > 0 ? '1px solid red' : '' }}
                 className={errors.description.length > 0 ? 'error' : ''}
                 value={description}
-                onChange={this.onDescriptionChange}
+                onChange={this.onInputChange}
+                name="description"
                 id="description"
                 placeholder="Write about your event, be creative"
               />
@@ -372,8 +368,15 @@ class AddEventPage extends React.Component {
             <p>{description.length}/140</p>
           </div>
           <div className="input-group">
-            <select value={categoryId} defaultValue="" onChange={this.onCategoryChange}>
-              <option value="" disabled>Select category (skills, interests, locations)</option>
+            <select
+              value={category}
+              defaultValue=""
+              onChange={this.onInputChange}
+              name="category"
+            >
+              <option value="" disabled>
+                Select category (skills, interests, locations)
+              </option>
               {
                 categories && categories.map(({ id, name }) => (
                   <option value={id} key={id}>{name}</option>
@@ -385,13 +388,27 @@ class AddEventPage extends React.Component {
             Payment
             <div className="input-group__inner-group">
               <label htmlFor="free-event">
-                <input type="radio" checked={!paidEvent} onChange={this.onEventPaidChange} name="freeEvent" id="free-event" />
+                <input
+                  type="radio"
+                  checked={!paidEvent}
+                  onChange={this.onInputChange}
+                  value={!!0}
+                  name="paidEvent"
+                  id="free-event"
+                />
                 Free event
               </label>
             </div>
             <div className="input-group__inner-group">
               <label htmlFor="paid-event">
-                <input type="radio" checked={paidEvent} onChange={this.onEventPaidChange} name="paidEvent" id="paid-event" />
+                <input
+                  type="radio"
+                  checked={paidEvent}
+                  onChange={this.onInputChange}
+                  value={!!1}
+                  name="paidEvent"
+                  id="paid-event"
+                />
                 Paid event
               </label>
             </div>
@@ -402,7 +419,8 @@ class AddEventPage extends React.Component {
                   className={errors.eventFee.length > 0 ? 'error' : ''}
                   type="text"
                   value={eventFee}
-                  onChange={this.onEventFeeChange}
+                  onChange={this.onInputChange}
+                  name="eventFee"
                   placeholder="Fee"
                 />
                 $
@@ -411,7 +429,13 @@ class AddEventPage extends React.Component {
           </div>
           <div className="input-group">
             Reward
-            <input type="text" value={reward} onChange={this.onRewardChange} placeholder="Number" name="reward" />
+            <input
+              type="text"
+              value={reward}
+              onChange={this.onInputChange}
+              placeholder="Number"
+              name="reward"
+            />
             reward points for attendance
           </div>
         </div>
@@ -483,7 +507,13 @@ class AddEventPage extends React.Component {
           <div className="input-group">
             Duration
             <div className="input-group__inner-group">
-              <input type="text" value={duration} onChange={this.onDurationChange} placeholder="Number" /> hour
+              <input
+                type="text"
+                value={duration}
+                onChange={this.onInputChange}
+                name="duration"
+                placeholder="Number"
+              /> hour
             </div>
           </div>
         </div>
