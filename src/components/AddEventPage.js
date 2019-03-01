@@ -12,8 +12,8 @@ class AddEventPage extends React.Component {
     eventFee: '',
     reward: '',
     coordinator: {
-      id: '',
-      email: '',
+      id: 3,
+      email: 'walter.nelson@hussa.rs',
     },
     dateTime: {
       date: '',
@@ -27,6 +27,8 @@ class AddEventPage extends React.Component {
       coordinator: false,
       emailMatch: false,
       eventFee: false,
+      date: false,
+      time: false,
     },
   };
 
@@ -149,22 +151,40 @@ class AddEventPage extends React.Component {
 
   onDateChange = (e) => {
     const date = e.target.value;
+    const { errors } = this.state;
     this.setState(prevState => ({
       dateTime: {
         ...prevState.dateTime,
         date,
       },
     }));
+    if (errors.date) {
+      this.setState(prevState => ({
+        errors: {
+          ...prevState.errors,
+          date: false,
+        },
+      }));
+    }
   };
 
   onTimeChange = (e) => {
     const time = e.target.value;
+    const { errors } = this.state;
     this.setState(prevState => ({
       dateTime: {
         ...prevState.dateTime,
         time,
       },
     }));
+    if (errors.time) {
+      this.setState(prevState => ({
+        errors: {
+          ...prevState.errors,
+          time: false,
+        },
+      }));
+    }
   };
 
   onAmPmChange = (e) => {
@@ -195,11 +215,11 @@ class AddEventPage extends React.Component {
     }
   };
 
-  formValid = (errors) => {
-    let valid = false;
+  formValid = (dataToValidate) => {
+    let valid = true;
 
-    Object.values(errors).forEach((val) => {
-      if (val === true) {
+    Object.values(dataToValidate).forEach((val) => {
+      if (!val) {
         valid = false;
       }
     });
@@ -216,11 +236,33 @@ class AddEventPage extends React.Component {
       coordinator,
       paidEvent,
       eventFee,
-      errors,
+      categoryId,
+      reward,
+      dateTime,
     } = this.state;
 
-    if (this.formValid(errors)) {
-      console.log('POSZLO');
+    if (this.formValid({
+      title,
+      description,
+      coordinator: coordinator.id,
+      paidEvent,
+      eventFee,
+    })) {
+      const data = {
+        title,
+        description,
+        category_id: categoryId,
+        paid_event: paidEvent,
+        event_fee: eventFee || 0,
+        reward: reward || 0,
+        date: `${dateTime.date}T${dateTime.time}`,
+        duration: 1000,
+        coordinator: {
+          email: coordinator.email,
+          id: coordinator.id,
+        },
+      };
+      console.log(data);
     } else {
       console.log('NIE POSZLO');
     }
@@ -249,7 +291,7 @@ class AddEventPage extends React.Component {
         },
       }));
     }
-    if (coordinator.email && !coordinator.email.match(/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/)) {
+    if (coordinator.email && !coordinator.email.match(/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/)) {
       this.setState(prevState => ({
         errors: {
           ...prevState.errors,
@@ -262,6 +304,22 @@ class AddEventPage extends React.Component {
         errors: {
           ...prevState.errors,
           eventFee: true,
+        },
+      }));
+    }
+    if (!dateTime.date) {
+      this.setState(prevState => ({
+        errors: {
+          ...prevState.errors,
+          date: true,
+        },
+      }));
+    }
+    if (!dateTime.time) {
+      this.setState(prevState => ({
+        errors: {
+          ...prevState.errors,
+          time: true,
         },
       }));
     }
@@ -282,25 +340,33 @@ class AddEventPage extends React.Component {
     } = this.state;
 
     return (
-      <form onSubmit={this.onSubmit}>
+      <form onSubmit={this.onSubmit} noValidate>
         <div>
           <h2>About</h2>
           <hr />
           <div className="input-group">
             <label htmlFor="title">
               Title
-              <input type="text" className={errors.title === true ? 'error' : ''} value={title} onChange={this.onTitleChange} id="title" />
+              <input type="text" style={{ border: errors.title === true ? '1px solid red' : '' }} className={errors.title === true ? 'error' : ''} value={title} onChange={this.onTitleChange} id="title" />
             </label>
           </div>
           <div className="input-group">
             <label htmlFor="description">
               Description
-              <textarea className={errors.description === true ? 'error' : ''} value={description} onChange={this.onDescriptionChange} id="description" />
+              <textarea
+                style={{ border: errors.description === true ? '1px solid red' : '' }}
+                className={errors.description === true ? 'error' : ''}
+                value={description}
+                onChange={this.onDescriptionChange}
+                id="description"
+                placeholder="Write about your event, be creative"
+              />
             </label>
             <p>{description.length}/140</p>
           </div>
           <div className="input-group">
-            <select value={categoryId} onChange={this.onCategoryChange}>
+            <select value={categoryId} defaultValue="" onChange={this.onCategoryChange}>
+              <option value="" disabled>Select category (skills, interests, locations)</option>
               {
                 categories && categories.map(({ id, name }) => (
                   <option value={id} key={id}>{name}</option>
@@ -324,7 +390,7 @@ class AddEventPage extends React.Component {
             </div>
             {paidEvent && (
               <div className="input-group__inner-group">
-                <input className={errors.eventFee === true ? 'error' : ''} type="text" value={eventFee} onChange={this.onEventFeeChange} placeholder="Fee" />
+                <input style={{ border: errors.eventFee === true ? '1px solid red' : '' }} className={errors.eventFee === true ? 'error' : ''} type="text" value={eventFee} onChange={this.onEventFeeChange} placeholder="Fee" />
                 $
               </div>
             )}
@@ -340,7 +406,7 @@ class AddEventPage extends React.Component {
           <hr />
           <div className="input-group">
             Responsible
-            <select className={errors.coordinator === true ? 'error' : ''} value={coordinator.id} onChange={this.onCoordinatorChange}>
+            <select style={{ border: errors.coordinator === true ? '1px solid red' : '' }} className={errors.coordinator === true ? 'error' : ''} value={coordinator.id} onChange={this.onCoordinatorChange}>
               <optgroup label="Me">
                 <option value={coordinators[3].id}>{`${coordinators[3].name} ${coordinators[3].lastname}`}</option>
               </optgroup>
@@ -355,7 +421,7 @@ class AddEventPage extends React.Component {
           </div>
           <div className="input-group">
             Email
-            <input className={errors.emailMatch === true ? 'error' : ''} type="text" value={coordinator.email} onChange={this.onEmailChange} />
+            <input style={{ border: errors.emailMatch === true ? '1px solid red' : '' }} className={errors.emailMatch === true ? 'error' : ''} type="text" value={coordinator.email} onChange={this.onEmailChange} />
           </div>
         </div>
         <div>
@@ -363,9 +429,9 @@ class AddEventPage extends React.Component {
           <hr />
           <div className="input-group">
             Starts on*
-            <input type="date" value={dateTime.date} onChange={this.onDateChange} />
+            <input style={{ border: errors.date === true ? '1px solid red' : '' }} type="date" value={dateTime.date} onChange={this.onDateChange} />
             <div className="input-group__inner-group">
-              at <input type="time" min="00:00" max="12:00" value={dateTime.time} onChange={this.onTimeChange} />
+              at <input style={{ border: errors.time === true ? '1px solid red' : '' }} type="time" min="00:00" max="12:00" value={dateTime.time} onChange={this.onTimeChange} />
               <label htmlFor="am">
                 AM
                 <input type="radio" checked={dateTime.am} onChange={this.onAmPmChange} id="am" name="am" />
