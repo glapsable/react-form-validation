@@ -1,5 +1,5 @@
 import React from 'react';
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import categories from '../mocks/categories';
 import coordinators from '../mocks/employes';
 
@@ -94,12 +94,16 @@ class AddEventPage extends React.Component {
         }));
         break;
       case 'time':
-        this.setState(prevState => ({
-          dateTime: {
-            ...prevState.dateTime,
-            time: value,
-          },
-        }));
+        if (!value || value.split(':')[0].match(/^(1[0-2]|0?[1-9])$/)) {
+          this.setState(prevState => ({
+            dateTime: {
+              ...prevState.dateTime,
+              time: value,
+            },
+          }));
+        } else {
+          console.log('dupa');
+        }
         break;
       case 'am':
         this.setState(prevState => ({
@@ -135,7 +139,6 @@ class AddEventPage extends React.Component {
 
   onSubmit = (e) => {
     e.preventDefault();
-
     const {
       title,
       description,
@@ -145,89 +148,63 @@ class AddEventPage extends React.Component {
       category,
       reward,
       dateTime,
+      duration,
+      errors,
     } = this.state;
 
-    if (this.formValid({
+    const formErrors = errors;
+    formErrors.title = !title ? 'Fill title field' : '';
+    formErrors.description = !description ? 'Fill description field' : '';
+    formErrors.coordinator = !coordinator.id ? 'Choose coordinator' : '';
+    formErrors.emailMatch = !coordinator.email.match(/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/) ? 'Wrong email address' : '';
+    formErrors.eventFee = paidEvent && !eventFee ? 'Fill Fee field' : '';
+    formErrors.date = !dateTime.date ? 'Fill date field' : '';
+    formErrors.time = !dateTime.time ? 'Fill time field' : '';
+    this.setState(() => ({
+      errors: formErrors,
+    }));
+
+    const dataToSend = {
       title,
       description,
-      coordinator: coordinator.id,
-      paidEvent,
-      eventFee,
-    })) {
-      const data = {
-        title,
-        description,
-        category_id: category,
-        paid_event: paidEvent,
-        event_fee: eventFee || 0,
-        reward: reward || 0,
-        date: `${dateTime.date}T${dateTime.time}`,
-        duration: 1000,
-        coordinator: {
-          email: coordinator.email,
-          id: coordinator.id,
-        },
-      };
-      console.log(data);
-    } else {
-      console.log('NIE POSZLO');
-    }
+      category_id: category,
+      paid_event: paidEvent,
+      event_fee: eventFee || 0,
+      reward: reward || 0,
+      date: `${dateTime.date}T${dateTime.time}`,
+      duration: duration * 3600,
+      coordinator: {
+        email: coordinator.email,
+        id: coordinator.id,
+      },
+    };
 
-    if (!title.trim()) {
-      this.setState(prevState => ({
-        errors: {
-          ...prevState.errors,
-          title: 'Fill title field',
-        },
-      }));
-    }
-    if (!description.trim()) {
-      this.setState(prevState => ({
-        errors: {
-          ...prevState.errors,
-          description: 'Fill description field',
-        },
-      }));
-    }
-    if (!coordinator.id) {
-      this.setState(prevState => ({
-        errors: {
-          ...prevState.errors,
-          coordinator: 'Choose coordinator',
-        },
-      }));
-    }
-    if (coordinator.email && !coordinator.email.match(/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/)) {
-      this.setState(prevState => ({
-        errors: {
-          ...prevState.errors,
-          emailMatch: 'Wrong email address',
-        },
-      }));
-    }
-    if (paidEvent && !eventFee) {
-      this.setState(prevState => ({
-        errors: {
-          ...prevState.errors,
-          eventFee: 'Fill Fee field',
-        },
-      }));
-    }
-    if (!dateTime.date) {
-      this.setState(prevState => ({
-        errors: {
-          ...prevState.errors,
-          date: 'Fill date field',
-        },
-      }));
-    }
-    if (!dateTime.time) {
-      this.setState(prevState => ({
-        errors: {
-          ...prevState.errors,
-          time: 'Fill time field',
-        },
-      }));
+    switch (paidEvent) {
+      case false:
+        if (this.formValid({
+          title,
+          description,
+          coordinator: coordinator.id,
+        })) {
+          const { history } = this.props;
+          history.push('/success');
+          console.log(dataToSend);
+        }
+        break;
+      case true:
+        if (this.formValid({
+          title,
+          description,
+          coordinator: coordinator.id,
+          eventFee,
+        })) {
+          const { history } = this.props;
+          history.push('/success');
+          console.log(dataToSend);
+        }
+        break;
+      default:
+        break;
     }
   };
 
@@ -441,7 +418,7 @@ class AddEventPage extends React.Component {
 }
 
 AddEventPage.propTypes = {
-  // history: PropTypes.func.isRequired,
+  history: PropTypes.objectOf(PropTypes.any).isRequired,
 };
 
 export default AddEventPage;
