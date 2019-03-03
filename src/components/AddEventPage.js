@@ -101,8 +101,6 @@ class AddEventPage extends React.Component {
               time: value,
             },
           }));
-        } else {
-          console.log('dupa');
         }
         break;
       case 'am':
@@ -164,19 +162,28 @@ class AddEventPage extends React.Component {
       errors: formErrors,
     }));
 
-    const dataToSend = {
-      title,
-      description,
-      category_id: category,
-      paid_event: paidEvent,
-      event_fee: eventFee || 0,
-      reward: reward || 0,
-      date: `${dateTime.date}T${dateTime.time}`,
-      duration: duration * 3600,
-      coordinator: {
-        email: coordinator.email,
-        id: coordinator.id,
-      },
+    const prepareDataToSend = () => {
+      let dateTimeHours = dateTime.time;
+      if (dateTime.am === false) {
+        const dateTimeArr = dateTime.time.split(':');
+        const hours = (+dateTimeArr[0] + 12).toString();
+        const minutes = dateTimeArr[1];
+        dateTimeHours = `${hours}:${minutes}`;
+      }
+      return {
+        title,
+        description,
+        category_id: category,
+        paid_event: paidEvent,
+        event_fee: eventFee || 0,
+        reward: reward || 0,
+        date: `${dateTime.date}T${dateTimeHours}`,
+        duration: duration * 3600,
+        coordinator: {
+          email: coordinator.email,
+          id: coordinator.id,
+        },
+      };
     };
 
     switch (paidEvent) {
@@ -185,10 +192,12 @@ class AddEventPage extends React.Component {
           title,
           description,
           coordinator: coordinator.id,
+          date: dateTime.date,
+          time: dateTime.time,
         })) {
           const { history } = this.props;
           history.push('/success');
-          console.log(dataToSend);
+          console.log(prepareDataToSend());
         }
         break;
       case true:
@@ -197,10 +206,12 @@ class AddEventPage extends React.Component {
           description,
           coordinator: coordinator.id,
           eventFee,
+          date: dateTime.date,
+          time: dateTime.time,
         })) {
           const { history } = this.props;
           history.push('/success');
-          console.log(dataToSend);
+          console.log(prepareDataToSend());
         }
         break;
       default:
