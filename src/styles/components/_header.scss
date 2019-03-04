@@ -1,0 +1,12 @@
+.header {
+  background-color: $blue-light;
+  border-top: 15px solid $blue-dark;
+  padding: 0 40px;
+}
+
+.header__title {
+  color: #FFFFFF;
+  font-size: $xl-font;
+  font-weight: 300;
+  padding: $l-size 0;
+}

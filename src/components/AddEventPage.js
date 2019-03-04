@@ -150,6 +150,7 @@ class AddEventPage extends React.Component {
       errors,
     } = this.state;
 
+    // Errors messages
     const formErrors = errors;
     formErrors.title = !title ? 'Fill title field' : '';
     formErrors.description = !description ? 'Fill description field' : '';
@@ -234,61 +235,67 @@ class AddEventPage extends React.Component {
     } = this.state;
 
     return (
-      <form onSubmit={this.onSubmit} noValidate>
-        <div>
-          <h2>About</h2>
-          <hr />
-          <div className="input-group">
-            <label htmlFor="title">
-              Title
-              <input
-                type="text"
-                style={{ border: errors.title.length > 0 ? '1px solid red' : '' }}
-                className={errors.title.length > 0 ? 'error' : ''}
-                value={title}
-                onChange={this.onInputChange}
-                name="title"
-                id="title"
-                placeholder="Make it short and clear"
-              />
-            </label>
+      <form className="content-container" onSubmit={this.onSubmit} noValidate>
+        <section className="form-section">
+          <h2 className="form-section__title">About</h2>
+          <div className="form-section__input-group">
+            <div className="form-section__label">Title<span className="form-section__label-require">*</span></div>
+            <input
+              className="form-section__input"
+              type="text"
+              style={{ border: errors.title.length > 0 ? '1px solid red' : '' }}
+              value={title}
+              onChange={this.onInputChange}
+              name="title"
+              id="title"
+              placeholder="Make it short and clear"
+            />
           </div>
-          <div className="input-group">
-            <label htmlFor="description">
-              Description
+          <div className="form-section__input-group">
+            <div className="form-section__label">Description<span className="form-section__label-require">*</span></div>
+            <div>
               <textarea
+                className="form-section__input form-section__input--textarea"
                 style={{ border: errors.description.length > 0 ? '1px solid red' : '' }}
-                className={errors.description.length > 0 ? 'error' : ''}
                 value={description}
                 onChange={this.onInputChange}
                 name="description"
                 id="description"
                 placeholder="Write about your event, be creative"
               />
-            </label>
-            <p>{description.length}/140</p>
+              <div className="form-section__information-wrapper">
+                <p className="form-section__information">Max length 140 characters</p>
+                <p className="form-section__information">{description.length}/140</p>
+              </div>
+            </div>
           </div>
-          <div className="input-group">
-            <select
-              value={category}
-              defaultValue=""
-              onChange={this.onInputChange}
-              name="category"
-            >
-              <option value="" disabled>
-                Select category (skills, interests, locations)
-              </option>
-              {
-                categories && categories.map(({ id, name }) => (
-                  <option value={id} key={id}>{name}</option>
-                ))
-              }
-            </select>
+          <div className="form-section__input-group">
+            <div className="form-section__label">Category</div>
+            <div>
+              <select
+                required
+                className="form-section__input"
+                value={category}
+                defaultValue=""
+                onChange={this.onInputChange}
+                name="category"
+              >
+                <option value="" hidden disabled>
+                  Select category (skills, interests, locations)
+                </option>
+                {
+                  categories && categories.map(({ id, name }) => (
+                    <option value={id} key={id}>{name}</option>
+                  ))
+                }
+              </select>
+              <p className="form-section__information">Describes topic and people who should be interested in this event</p>
+            </div>
           </div>
-          <div className="input-group">
-            Payment
-            <div className="input-group__inner-group">
-              <label htmlFor="free-event">
+          <div className="form-section__input-group">
+            <div className="form-section__label">Payment<span className="form-section__label-require">*</span></div>
+            <div className="form-section__inner-group">
+              <label className="form-section__radio-input" htmlFor="free-event">
                 <input
                   type="radio"
                   checked={!paidEvent}
@@ -297,11 +304,10 @@ class AddEventPage extends React.Component {
                   name="paidEvent"
                   id="free-event"
                 />
+                <span className="new-radio" />
                 Free event
               </label>
-            </div>
-            <div className="input-group__inner-group">
-              <label htmlFor="paid-event">
+              <label className="form-section__radio-input" htmlFor="paid-event">
                 <input
                   type="radio"
                   checked={paidEvent}
@@ -310,44 +316,48 @@ class AddEventPage extends React.Component {
                   name="paidEvent"
                   id="paid-event"
                 />
+                <span className="new-radio" />
                 Paid event
               </label>
+
+              {paidEvent && (
+                <div className="input-group__inner-group">
+                  <input
+                    className="form-section__input form-section__input--small"
+                    style={{ border: errors.eventFee.length > 0 ? '1px solid red' : '' }}
+                    type="text"
+                    value={eventFee}
+                    onChange={this.onInputChange}
+                    name="eventFee"
+                    placeholder="Fee"
+                  />
+                  <span className="form-section__inline-info">$</span>
+                </div>
+              )}
             </div>
-            {paidEvent && (
-              <div className="input-group__inner-group">
-                <input
-                  style={{ border: errors.eventFee.length > 0 ? '1px solid red' : '' }}
-                  className={errors.eventFee.length > 0 ? 'error' : ''}
-                  type="text"
-                  value={eventFee}
-                  onChange={this.onInputChange}
-                  name="eventFee"
-                  placeholder="Fee"
-                />
-                $
-              </div>
-            )}
           </div>
-          <div className="input-group">
-            Reward
-            <input
-              type="text"
-              value={reward}
-              onChange={this.onInputChange}
-              placeholder="Number"
-              name="reward"
-            />
-            reward points for attendance
+          <div className="form-section__input-group">
+            <div className="form-section__label">Reward</div>
+            <div className="input-group__inner-group">
+              <input
+                className="form-section__input form-section__input--small"
+                type="text"
+                value={reward}
+                onChange={this.onInputChange}
+                placeholder="Number"
+                name="reward"
+              />
+              <span className="form-section__inline-info">reward points for attendance</span>
+            </div>
           </div>
-        </div>
-        <div>
-          <h2>Coordinator</h2>
-          <hr />
-          <div className="input-group">
-            Responsible
+        </section>
+        <section className="form-section">
+          <h2 className="form-section__title">Coordinator</h2>
+          <div className="form-section__input-group">
+            <div className="form-section__label">Responsible<span className="form-section__label-require">*</span></div>
             <select
+              className="form-section__input"
               style={{ border: errors.coordinator.length > 0 ? '1px solid red' : '' }}
-              className={errors.coordinator.length > 0 ? 'error' : ''}
               value={coordinator.id}
               onChange={this.onInputChange}
               name="coordinator"
@@ -364,33 +374,35 @@ class AddEventPage extends React.Component {
               </optgroup>
             </select>
           </div>
-          <div className="input-group">
-            Email
+          <div className="form-section__input-group">
+            <div className="form-section__label">Email</div>
             <input
+              className="form-section__input"
               style={{ border: errors.emailMatch.length > 0 ? '1px solid red' : '' }}
-              className={errors.emailMatch.length > 0 ? 'error' : ''}
               type="text"
               value={coordinator.email}
               onChange={this.onInputChange}
               name="email"
             />
           </div>
-        </div>
-        <div>
-          <h2>When</h2>
-          <hr />
-          <div className="input-group">
-            Starts on*
-            <input
-              style={{ border: errors.date.length > 0 ? '1px solid red' : '' }}
-              type="date"
-              value={dateTime.date}
-              onChange={this.onInputChange}
-              name="date"
-            />
-            <div className="input-group__inner-group">
-              at
+        </section>
+        <section className="form-section">
+          <h2 className="form-section__title">When</h2>
+          <div className="form-section__input-group">
+            <div className="form-section__label">Starts on<span className="form-section__label-require">*</span></div>
+            <div className="form-section__inner-group">
               <input
+                className="form-section__input form-section__input--medium"
+                style={{ border: errors.date.length > 0 ? '1px solid red' : '' }}
+                type="date"
+                value={dateTime.date}
+                onChange={this.onInputChange}
+                name="date"
+                placeholder="dd/mm/yyyy"
+              />
+              <span className="form-section__inline-info">at</span>
+              <input
+                className="form-section__input form-section__input--small"
                 style={{ border: errors.time.length > 0 ? '1px solid red' : '' }}
                 type="time"
                 min="00:00"
@@ -398,30 +410,55 @@ class AddEventPage extends React.Component {
                 value={dateTime.time}
                 onChange={this.onInputChange}
                 name="time"
+                placeholder="--:--"
               />
-              <label htmlFor="am">
+              <label
+                className="form-section__radio-input form-section__radio-input--reverse form-section__radio-input--marg-l"
+                htmlFor="am"
+              >
                 AM
-                <input type="radio" checked={dateTime.am} onChange={this.onInputChange} value={!!1} id="am" name="am" />
+                <input
+                  type="radio"
+                  checked={dateTime.am}
+                  onChange={this.onInputChange}
+                  value={!!1}
+                  id="am"
+                  name="am"
+                />
+                <div className="new-radio" />
               </label>
-              <label htmlFor="pm">
+              <label
+                className="form-section__radio-input form-section__radio-input--reverse"
+                htmlFor="pm"
+              >
                 PM
-                <input type="radio" checked={!dateTime.am} onChange={this.onInputChange} value={!!0} id="pm" name="am" />
+                <input
+                  type="radio"
+                  checked={!dateTime.am}
+                  onChange={this.onInputChange}
+                  value={!!0}
+                  id="pm"
+                  name="am"
+                />
+                <div className="new-radio" />
               </label>
             </div>
           </div>
-          <div className="input-group">
-            Duration
+          <div className="form-section__input-group">
+            <div className="form-section__label">Duration</div>
             <div className="input-group__inner-group">
               <input
+                className="form-section__input"
                 type="text"
                 value={duration}
                 onChange={this.onInputChange}
                 name="duration"
                 placeholder="Number"
-              /> hour
+              />
+              <span className="form-section__inline-info">hour</span>
             </div>
           </div>
-        </div>
+        </section>
         <button type="submit">Publish event</button>
       </form>
     );

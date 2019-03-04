@@ -1,0 +1,79 @@
+.form-section {
+  background-color: #FFFFFF;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0,0,0,.2);
+  margin-top: $l-size;
+  padding: $m-size $xl-size;
+}
+
+.form-section__title {
+  border-bottom: 1px solid $grey;
+  color: $blue-light;
+  font-size: $l-size;
+  font-weight: 400;
+  padding-bottom: $s-size;
+}
+
+.form-section__input-group {
+  display: flex;
+  margin-top: $m-size;
+}
+
+.form-section__label {
+  color: $blue-weird;
+  padding-top: $xs-size;
+  text-transform: uppercase;
+  width: 12.5rem;
+}
+
+.form-section__label-require {
+  color: red;
+  padding-left: $xs-size;
+}
+
+.form-section__input {
+  border: 1px solid $grey;
+  border-radius: 3px;
+  padding: $s-size;
+  width: 45rem;
+  &--textarea {
+    height: 13rem;
+  }
+  &--small {
+    width: 10rem;
+  }
+  &--medium {
+    width: 18.5rem;
+  }
+}
+
+.form-section__information-wrapper {
+  display: flex;
+  justify-content: space-between;
+}
+
+.form-section__information {
+  color: $grey;
+  font-style: italic;
+  font-size: $s-font;
+}
+
+.form-section__inner-group {
+  display: flex;
+  align-items: center;
+}
+
+.form-section__radio-input {
+  display: flex;
+  margin-right: $m-size;
+  &--reverse {
+    flex-direction: row-reverse;
+  }
+  &--marg-l {
+    margin-left: $m-size;
+  }
+}
+
+.form-section__inline-info {
+  margin: 0 $m-size;
+}
