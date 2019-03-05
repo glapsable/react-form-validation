@@ -16,6 +16,7 @@
 
 .form-section__input-group {
   display: flex;
+  align-items: flex-start;
   margin-top: $m-size;
 }
 
@@ -23,11 +24,11 @@
   color: $blue-weird;
   padding-top: $xs-size;
   text-transform: uppercase;
-  width: 12.5rem;
+  width: 11.5rem;
 }
 
 .form-section__label-require {
-  color: red;
+  color: $red;
   padding-left: $xs-size;
 }
 
@@ -35,6 +36,7 @@
   border: 1px solid $grey;
   border-radius: 3px;
   padding: $s-size;
+  margin-right: $s-size;
   width: 45rem;
   &--textarea {
     height: 13rem;
@@ -50,6 +52,7 @@
 .form-section__information-wrapper {
   display: flex;
   justify-content: space-between;
+  margin-right: $s-size;
 }
 
 .form-section__information {
@@ -75,5 +78,31 @@
 }
 
 .form-section__inline-info {
-  margin: 0 $m-size;
+  margin: 0 $m-size 0 $s-size;
+}
+
+.form-section__error {
+  background-color: $red;
+  color: #FFFFFF;
+  padding: $xs-size;
+  position: relative;
+  max-width: 14.5rem;
+  &::before {
+    content: '';
+    border-style: solid;
+    border-width: 5px 8px 5px 0;
+    border-color: transparent #ffb2b2 transparent transparent;
+    position: absolute;
+    left: -8px;
+    top: 10px;
+  }
+}
+
+.form-section__input-group.error {
+  & > .form-section__label {
+    color: $red;
+  }
+  & .form-section__input, & .form-section__input--textarea {
+    border: 1px solid $red;
+  }
 }

@@ -25,7 +25,7 @@ class AddEventPage extends React.Component {
       title: '',
       description: '',
       coordinator: '',
-      emailMatch: '',
+      email: '',
       eventFee: '',
       date: '',
       time: '',
@@ -152,13 +152,13 @@ class AddEventPage extends React.Component {
 
     // Errors messages
     const formErrors = errors;
-    formErrors.title = !title ? 'Fill title field' : '';
-    formErrors.description = !description ? 'Fill description field' : '';
-    formErrors.coordinator = !coordinator.id ? 'Choose coordinator' : '';
-    formErrors.emailMatch = !coordinator.email.match(/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/) ? 'Wrong email address' : '';
-    formErrors.eventFee = paidEvent && !eventFee ? 'Fill Fee field' : '';
-    formErrors.date = !dateTime.date ? 'Fill date field' : '';
-    formErrors.time = !dateTime.time ? 'Fill time field' : '';
+    formErrors.title = !title ? 'Title cannot be empty' : '';
+    formErrors.description = !description ? 'Description cannot be empty' : '';
+    formErrors.coordinator = !coordinator.id ? 'Coordinator cannot be empty' : '';
+    formErrors.email = !coordinator.email.match(/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/) ? 'Wrong email address' : '';
+    formErrors.eventFee = paidEvent && !eventFee ? 'Fee cannot be empty' : '';
+    formErrors.date = !dateTime.date ? 'Date cannot be empty' : '';
+    formErrors.time = !dateTime.time ? 'Time cannot be empty' : '';
     this.setState(() => ({
       errors: formErrors,
     }));
@@ -167,7 +167,8 @@ class AddEventPage extends React.Component {
       let dateTimeHours = dateTime.time;
       if (dateTime.am === false) {
         const dateTimeArr = dateTime.time.split(':');
-        const hours = (+dateTimeArr[0] + 12).toString();
+        let hours = +dateTimeArr[0] + 12;
+        hours = hours === 24 ? '00' : hours.toString();
         const minutes = dateTimeArr[1];
         dateTimeHours = `${hours}:${minutes}`;
       }
@@ -182,7 +183,7 @@ class AddEventPage extends React.Component {
         duration: duration * 3600,
         coordinator: {
           email: coordinator.email,
-          id: coordinator.id,
+          id: coordinator.id.toString(),
         },
       };
     };
@@ -238,25 +239,24 @@ class AddEventPage extends React.Component {
       <form className="content-container" onSubmit={this.onSubmit} noValidate>
         <section className="form-section">
           <h2 className="form-section__title">About</h2>
-          <div className="form-section__input-group">
+          <div className={`form-section__input-group ${errors.title ? 'error' : ''}`}>
             <div className="form-section__label">Title<span className="form-section__label-require">*</span></div>
             <input
               className="form-section__input"
               type="text"
-              style={{ border: errors.title.length > 0 ? '1px solid red' : '' }}
               value={title}
               onChange={this.onInputChange}
               name="title"
               id="title"
               placeholder="Make it short and clear"
             />
+            {errors.title && <p className="form-section__error">{errors.title}</p>}
           </div>
-          <div className="form-section__input-group">
+          <div className={`form-section__input-group ${errors.description ? 'error' : ''}`}>
             <div className="form-section__label">Description<span className="form-section__label-require">*</span></div>
             <div>
               <textarea
                 className="form-section__input form-section__input--textarea"
-                style={{ border: errors.description.length > 0 ? '1px solid red' : '' }}
                 value={description}
                 onChange={this.onInputChange}
                 name="description"
@@ -268,6 +268,7 @@ class AddEventPage extends React.Component {
                 <p className="form-section__information">{description.length}/140</p>
               </div>
             </div>
+            {errors.description && <p className="form-section__error">{errors.description}</p>}
           </div>
           <div className="form-section__input-group">
             <div className="form-section__label">Category</div>
@@ -292,7 +293,7 @@ class AddEventPage extends React.Component {
               <p className="form-section__information">Describes topic and people who should be interested in this event</p>
             </div>
           </div>
-          <div className="form-section__input-group">
+          <div className={`form-section__input-group ${errors.eventFee ? 'error' : ''}`}>
             <div className="form-section__label">Payment<span className="form-section__label-require">*</span></div>
             <div className="form-section__inner-group">
               <label className="form-section__radio-input" htmlFor="free-event">
@@ -319,12 +320,10 @@ class AddEventPage extends React.Component {
                 <span className="new-radio" />
                 Paid event
               </label>
-
               {paidEvent && (
-                <div className="input-group__inner-group">
+                <div className="form-section__inner-group">
                   <input
                     className="form-section__input form-section__input--small"
-                    style={{ border: errors.eventFee.length > 0 ? '1px solid red' : '' }}
                     type="text"
                     value={eventFee}
                     onChange={this.onInputChange}
@@ -332,6 +331,7 @@ class AddEventPage extends React.Component {
                     placeholder="Fee"
                   />
                   <span className="form-section__inline-info">$</span>
+                  {errors.eventFee && <p className="form-section__error">{errors.eventFee}</p>}
                 </div>
               )}
             </div>
@@ -357,7 +357,7 @@ class AddEventPage extends React.Component {
             <div className="form-section__label">Responsible<span className="form-section__label-require">*</span></div>
             <select
               className="form-section__input"
-              style={{ border: errors.coordinator.length > 0 ? '1px solid red' : '' }}
+              style={{ border: errors.coordinator ? '1px solid red' : '' }}
               value={coordinator.id}
               onChange={this.onInputChange}
               name="coordinator"
@@ -374,43 +374,39 @@ class AddEventPage extends React.Component {
               </optgroup>
             </select>
           </div>
-          <div className="form-section__input-group">
+          <div className={`form-section__input-group ${errors.email ? 'error' : ''}`}>
             <div className="form-section__label">Email</div>
             <input
               className="form-section__input"
-              style={{ border: errors.emailMatch.length > 0 ? '1px solid red' : '' }}
               type="text"
               value={coordinator.email}
               onChange={this.onInputChange}
               name="email"
             />
+            {errors.email && <p className="form-section__error">{errors.email}</p>}
           </div>
         </section>
         <section className="form-section">
           <h2 className="form-section__title">When</h2>
-          <div className="form-section__input-group">
+          <div className={`form-section__input-group ${errors.date || errors.time ? 'error' : ''}`}>
             <div className="form-section__label">Starts on<span className="form-section__label-require">*</span></div>
             <div className="form-section__inner-group">
               <input
-                className="form-section__input form-section__input--medium"
-                style={{ border: errors.date.length > 0 ? '1px solid red' : '' }}
+                className={`form-section__input form-section__input--medium ${!dateTime.date ? 'placeholder' : ''}`}
                 type="date"
                 value={dateTime.date}
                 onChange={this.onInputChange}
                 name="date"
-                placeholder="dd/mm/yyyy"
               />
               <span className="form-section__inline-info">at</span>
               <input
-                className="form-section__input form-section__input--small"
-                style={{ border: errors.time.length > 0 ? '1px solid red' : '' }}
+                className={`form-section__input form-section__input--small ${!dateTime.time ? 'placeholder' : ''}`}
                 type="time"
                 min="00:00"
                 max="12:00"
                 value={dateTime.time}
                 onChange={this.onInputChange}
                 name="time"
-                placeholder="--:--"
               />
               <label
                 className="form-section__radio-input form-section__radio-input--reverse form-section__radio-input--marg-l"
@@ -443,12 +439,14 @@ class AddEventPage extends React.Component {
                 <div className="new-radio" />
               </label>
             </div>
+            {errors.date && <p className="form-section__error">{errors.date}</p>}
+            {!errors.date && errors.time && <p className="form-section__error">{errors.time}</p>}
           </div>
           <div className="form-section__input-group">
             <div className="form-section__label">Duration</div>
             <div className="input-group__inner-group">
               <input
-                className="form-section__input"
+                className="form-section__input form-section__input--small"
                 type="text"
                 value={duration}
                 onChange={this.onInputChange}

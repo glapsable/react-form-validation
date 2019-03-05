@@ -9,7 +9,7 @@ html {
 body {
   background: #f7f7f7;
   font-family: Roboto, Helvetica, Arial, sans-serif;
-  font-size: $m-font;
+  font-size: $s-font;
   line-height: 1.6;
 }
 
@@ -41,8 +41,13 @@ button:disabled {
 input::placeholder, textarea::placeholder, select:required:invalid {
   color: $grey;
 }
+
 option {
   color: black;
+}
+
+.placeholder {
+  color: $grey;
 }
 
 // custom radio buttons
